@@ -1,22 +1,32 @@
 # Kubernetes Basics
 
+### What is Kubernetes (K8)?
+* Orchestration of containers
+
+* Deployment seperated from infrastructure
+
+* 
+
+
 ### Useful CLI based commands:  
 * `Set-Alias -Name kube -Value kubectl`  
 
-
 * `kubectl run <pod_name> --image=<docker_img>` - Create and run a pod  
-
 
 * `kubectl port-forward <pod_name> <external>:<internal>` - Forward a port temporarily 
 
-
 * `kubectl delete <pod_name>` - Delete a pod  
 
-
 * `kubectl get <resource>` - Get a list of existing resources
-	* `all`
-	* `pods`
-	* `services`
+	* `all`  
+	* `pods`  
+	* `services`  
+
+* `kubectl describe <resource> <name>` - Get information about a pod  
+
+* `kubectl exec <pod_name> -it sh` - SSH into a pod  
+
+
 
 
 ### Useful YAML based commands:  
@@ -25,8 +35,8 @@
 	* `--dry-run=client` - Create and then instantly destroy  
 	* `--validate=<bool>` - Checks yaml syntax  
 
-
 * `kubectl apply -f <yml_file>` - Create what is defined in the yaml file or update the pods if they exist   
 
-
 * `kubectl delete -f <yml_file>` - Delete what is defined in the yaml file  
+
+* `kubectl edit -f <yml_file>` - Edit the yaml file  
