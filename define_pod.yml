@@ -1,0 +1,23 @@
+# Run this file:
+# kubectl create -f define_pod.yml
+
+# Run this file and support later use of 'apply':
+# kubectl create -f define_pod.yml --save-config
+
+# Run this file only to see if it works:
+# kubectl create -f define_pod.yml --dry-run=client --validate=true
+
+# Create / Update this pod at the same time:
+# kubectl apply -f define_pod.yml
+
+# Delete this pod:
+# kubectl delete -f define_pod.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-nginx
+spec:
+  containers:
+  - name: my-nginx
+    image: nginx:alpine
