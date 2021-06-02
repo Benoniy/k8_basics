@@ -17,15 +17,23 @@
 
 * `kubectl delete <resource> <name>` - Delete resource  
 	* `pod`
+  * `deployment`
 
 * `kubectl get <resource>` - Get a list of existing resources  
 	* `all`  
 	* `pods`  
+  * `deployments`  
+    * `--show-labels`
+    * `-l <key>=<value>` - Filter by label
 	* `services`  
 
 * `kubectl describe <resource> <name>` - Get information about a resource    
 
 * `kubectl exec <pod_name> -it sh` - SSH into a pod  
+
+* `kubectl scale <resource> <name> --replicas=<amount>`  
+  * `pod`
+  * `deployment`
 
 
 ### Useful YAML based commands:  
@@ -50,7 +58,7 @@ kind: Pod
 metadata:
   name: my-nginx
 spec:
-  containers:
+  containers: # This section is universal to deployment's and pod's
   - name: my-nginx
     image: nginx:alpine
 ```  
@@ -135,4 +143,75 @@ spec:
 ```
 
 
-## Deployments
+## Deployments:  
+* A declarative way of managing pods using replica sets 
+
+* A replica set controls pod's  
+  * Manages amount of pods  
+  * Provide self healing  
+  * Provide fault tolerance  
+  * Can scale pods horizontaly  
+  * Uses a pod template  
+
+* Deployments wrap replica set's  
+  * Scales replica sets  
+  * Supports zero downtime updates  
+  * Rollback functionality  
+  * Creates labels for pods and sets  
+
+
+## YAML for deployments:  
+
+### Basic deployment YAML:  
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+spec:
+  selector: # Select pod template labels
+  template: # Define a template
+    spec:
+      containers:
+      - name: my-nginx
+        image: nginx:alpine
+```
+
+
+### A more complete deployment:
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+
+# Describes the deployment
+metadata:
+  name: frontend
+  labels:
+    app: my-nginx
+    tier: frontend
+
+spec:
+  #replicas: <amount> # Scale this deployment
+
+  # Selects the template that has the label 'tier: frontend'
+  selector:
+    matchLabels:
+      tier: frontend
+  
+  template:
+    metadata:
+      labels:
+        tier: frontend
+    spec:
+      # Here you can define a pod like before
+      containers:
+      - name: my-nginx
+        image: nginx:alpine
+        livenessProbe: # You can even add liveness checks
+          httpGet:
+          path: /index.html
+          port: 80
+        initialDelaySeconds: 15
+        timeoutSeconds: 2
+        periodSeconds: 5
+        failureThreshold: 1
+```

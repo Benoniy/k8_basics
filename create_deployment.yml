@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+
+# Describes the deployment
+metadata:
+  name: frontend
+  labels:
+    app: my-nginx
+    tier: frontend
+
+spec:
+  
+  
+  # Selects the template that has the label 'tier: frontend'
+  selector:
+    matchLabels:
+      tier: frontend
+  
+  template:
+    metadata:
+      labels:
+        tier: frontend
+    spec:
+      # Here you can define a pod like before
+      containers:
+      - name: my-nginx
+        image: nginx:alpine
+        livenessProbe: # You can even add liveness checks
+          httpGet:
+          path: /index.html
+          port: 80
+        initialDelaySeconds: 15
+        timeoutSeconds: 2
+        periodSeconds: 5
+        failureThreshold: 1
