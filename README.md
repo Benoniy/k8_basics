@@ -27,6 +27,8 @@
         2. [YAML for hostPath](https://github.com/Benoniy/k8_basics#yaml-for-hostpath)
         3. [YAML for Cloud](https://github.com/Benoniy/k8_basics#yaml-for-cloud)
     2. [Persistent Volumes (PV) and Persistent volume claim's (PVC)](https://github.com/Benoniy/k8_basics#persistent-volumes-pv-and-persistent-volume-claims-pvc)
+        1. [YAML for PV's](https://github.com/Benoniy/k8_basics#yaml-for-pvs)
+        2. [YAML for PVC's](https://github.com/Benoniy/k8_basics#yaml-for-pvcs)
 
 
 ## What is Kubernetes (K8)?
@@ -93,6 +95,7 @@ spec:
   containers: # This section is universal to deployment's and pod's
   - name: my-nginx
     image: nginx:alpine
+
 ```  
 
 
@@ -120,6 +123,7 @@ spec:
       timeoutSeconds: 2 # Fail after 2 seconds
       periodSeconds: 5 # Perform this every 5 seconds
       failureThreshold: 1 # It can fail once
+
 ```
 
 
@@ -150,6 +154,7 @@ spec:
         - /tmp/healthy
       initialDelaySeconds: 5 # Delay for startup
       periodSeconds: 5 # Perform this every 5 seconds
+
 ```
 
 
@@ -172,6 +177,7 @@ spec:
         port: 80
       initialDelaySeconds: 2 # Delay for startup
       periodSeconds: 5 # Perform this every 5 seconds
+
 ```
 
 
@@ -206,6 +212,7 @@ spec:
       containers:
       - name: my-nginx
         image: nginx:alpine
+
 ```
 
 
@@ -246,6 +253,7 @@ spec:
         timeoutSeconds: 2
         periodSeconds: 5
         failureThreshold: 1
+
 ```
 
 
@@ -326,6 +334,7 @@ spec:
 
   # ExternalName setup
   #- port: 9000
+
 ```
 
 
@@ -372,6 +381,7 @@ spec:
     - name: html
       emptyDir: {}
 
+
   # Define our containers normally
   containers:
   - name: my-nginx
@@ -382,6 +392,7 @@ spec:
       - name: html # Name of the volume we want to mount
         mountPath: /usr/share/nginx/html # Internal location that we want to mount the volume to
         readOnly: true
+
 
   - name: html-updater
     image: alpine
@@ -394,6 +405,7 @@ spec:
     volumeMounts:
       - name: html # Name of the volume we want to mount
         mountPath: /html # Internal location that we want to mount the volume to
+
 ```
 
 
@@ -409,6 +421,7 @@ spec:
         path: /var/run/docker.sock
         type: Socket
 
+
   # Define our containers normally
   containers:
   - name: docker
@@ -420,6 +433,7 @@ spec:
     volumeMounts:
       - name: docker-socket # Name of the volume we want to mount
         mountPath: /var/run/docker.sock # Internal location that we want to mount the volume to
+
 ```
 
 
@@ -449,7 +463,6 @@ spec:
       #   fsType: ext4
 
 
-
   # Define our containers normally
   containers:
   - name: cloud-app
@@ -458,6 +471,7 @@ spec:
     volumeMounts:
       - name: cloud-volume # Name of the volume we want to mount
         mountPath: /data/storage # Internal location that we want to mount the volume to
+
 ```
 
 
@@ -473,4 +487,90 @@ spec:
       * Requests access to a Persistent volume
 
 
-#### YAML for PV and PVC
+#### YAML for PV's:  
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-pv
+
+spec:
+  capacity: 10gi
+
+  accessModes:
+    - ReadWriteOnce # One client can read/write
+    - ReadOnlyMany # Unlimited clients can read only
+
+  # Even if the claim is deleted don't delete the volume from the cloud
+  persistentVolumeReclaimPolicy: retain
+
+  # Define your cloud service provider
+  # AWS
+  awsElasticBlockStore:
+    volumeID: <volumeID>
+    fsType: ext4
+
+  # # Azure
+  # azureFile:
+  #   secretName: <secret>
+  #   shareName: <shareName>
+  #   readOnly: false
+
+  # # Google Cloud Platform
+  # gcePersistentDisk:
+  #   pdName: <pdName>
+  #   fsType: ext4
+
+```
+
+
+#### YAML for PVC's:  
+1. First we create a claim:
+    ```yaml
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: pp-dd-account-hdd-5g
+      annotations:
+        # This may be depreciated, see this website if you have problems.
+        # https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/
+        volume.beta.kubernetes.io/storage-class: accounthdd
+
+    spec:
+      accessModes:
+      - ReadWriteOnce # We want read/write access
+
+      resources:
+        requests:
+          storage: 5Gi # We want 5gb of storage
+
+    ```
+
+
+2. Then we attach our claim to a pod or deployment:
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: pod-with-claim
+      labels:
+        name: storage
+
+    spec:
+      # Define whatever you need in the container and then define a volume mount
+      containers:
+      - image: image
+        name: whatever
+
+        # Mount PVC using its assigned internal name
+        volumeMounts:
+        - name: blobdisk01
+          mountPath: /mnt/blobdisk
+      
+      # Define our volume
+      volumes:
+      - name: blobdisk01 # Give it a name that can be used internally
+        persistentVolumeClaim:
+          claimName: pp-dd-account-hdd-5g
+
+    ```
