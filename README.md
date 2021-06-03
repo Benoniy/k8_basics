@@ -343,8 +343,6 @@ spec:
     * if the node dies so does the volume
   * `nfs`
     * Exists as a separate networked volume
-    * Full separation from K8
-    * Could be provided by an external service
   * `configMap/secret`
     * Provide a Pod with access to K8 resources
   * `persistentVolumeClaim`
@@ -355,7 +353,7 @@ spec:
 * Volumes are defined when you create Pods
 
 
-### YAML for emptyDir: 
+#### YAML for emptyDir: 
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -390,7 +388,7 @@ spec:
 ```
 
 
-### YAML for hostPath: 
+#### YAML for hostPath: 
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -416,7 +414,7 @@ spec:
 ```
 
 
-### YAML for Cloud:
+#### YAML for Cloud:
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -452,3 +450,15 @@ spec:
       - name: cloud-volume # Name of the volume we want to mount
         mountPath: /data/storage # Internal location that we want to mount the volume to
 ```
+
+
+### Persistent Volumes and PVC's:
+* A cluster wide storage unit  
+* Relies on NAS (network attached storage)
+* Provisioned by an administrator  
+* Its life-cycle is completely separated from the pods that use it  
+* A working persistent volume system is made of two parts
+    1. A Persistent volume - The volume itself
+    2. A Persistent volume claim (PVC)
+      * Setup within a Deployment or Pod
+      * Requests access to a Persistent volume
