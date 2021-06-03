@@ -1,4 +1,20 @@
 # Kubernetes Basics
+## Contents:  
+1. [What is Kubenetes?](https://github.com/Benoniy/k8_basics#what-is-kubernetes-k8)
+  1. [Kubectl cheat sheet](https://github.com/Benoniy/k8_basics#useful-cli-based-commands)
+  2. [Running YAML files](https://github.com/Benoniy/k8_basics#running-yaml-files)
+2. [YAML for pods](https://github.com/Benoniy/k8_basics#yaml-for-pods)
+  1. [Liveness Probes](https://github.com/Benoniy/k8_basics#liveness-probes)
+  2. [Readiness Probes](https://github.com/Benoniy/k8_basics#readiness-probe)
+3. [Deployments](https://github.com/Benoniy/k8_basics#deployments)
+  1. [Basic Deployment](https://github.com/Benoniy/k8_basics#basic-deployment-yaml)
+  2. [More advanced Deployment](https://github.com/Benoniy/k8_basics#a-more-complete-deployment)
+4. [Services](https://github.com/Benoniy/k8_basics#services)
+  1. [Service Types](https://github.com/Benoniy/k8_basics#service-types)
+  2. [Kubectl for Services](https://github.com/Benoniy/k8_basics#kubectl-for-services)
+  3. [YAML for Services](https://github.com/Benoniy/k8_basics#yaml-for-services)
+5. [Volumes](https://github.com/Benoniy/k8_basics#volumes)
+
 
 ## What is Kubernetes (K8)?
 * Orchestration of containers  
@@ -36,7 +52,7 @@
   * `deployment`
 
 
-### Useful YAML based commands:  
+### Running YAML files:  
 * `kubectl create -f <yml_file>` - Create what is defined in the yaml file  
 	* `--save-config` - Saves metadata needed to run apply later on  
 	* `--dry-run=client` - Create and then instantly destroy  
@@ -295,3 +311,13 @@ spec:
   # ExternalName setup
   #- port: 9000
 ```
+
+
+## Volumes:  
+* Can be used to store data for access by pods  
+* Avoids data loss as the pod filesystem is ephemeral  
+* One pod can have multiple volumes  
+* Containers user a mountPath to access volumes (Like plugging a USB into a PC)  
+* There are two types  
+  - Volumes  
+  - PersistentVolumes  
