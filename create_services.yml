@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Service
+
+# Describes the service
+metadata:
+  name: my-nginx # This name is used as a DNS for the service <name>:<port>
+  labels:
+    app: my-nginx
+
+spec:
+  # What type? (ClusterIp | NodePort | LoadBalancer | ExternalName)
+  # type: # Type Here
+
+  # externalName: api.something.com # This is used if type is ExternalName
+
+  # What Pod template should it use?
+  selector:
+    app: my-nginx 
+
+  # What is the Container target port and service port?
+  ports: 
+  # ClusterIP setup
+  - name: http
+    port: 80
+    targetPort: 80
+
+  # NodePort setup
+  #- port: 80
+  #  targetPort: 80
+  #  nodePort: 31000 # This is optional
+
+  # LoadBalancer setup
+  #- port: 80 # This is the external port
+  #  targetPort: 80
+
+  # ExternalName setup
+  #- port: 9000

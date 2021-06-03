@@ -3,7 +3,7 @@
 ## What is Kubernetes (K8)?
 * Orchestration of containers  
 
-* Deployment seperated from infrastructure  
+* Deployment separated from infrastructure  
 
 * Nodes contain Pods, Pods contain Containers  
 
@@ -64,7 +64,7 @@ spec:
 ```  
 
 
-### liveness Probe's:
+### Liveness Probe's:
 ***Checks to see if the pod needs to be fixed/replaced***
 
 
@@ -150,7 +150,7 @@ spec:
   * Manages amount of pods  
   * Provide self healing  
   * Provide fault tolerance  
-  * Can scale pods horizontaly  
+  * Can scale pods horizontally  
   * Uses a pod template  
 
 * Deployments wrap replica set's  
@@ -214,4 +214,84 @@ spec:
         timeoutSeconds: 2
         periodSeconds: 5
         failureThreshold: 1
+```
+
+
+## Services:  
+* A single point of entry for accessing pods  
+* Helps us avoid IP address hell  
+* Services have IP's to access them  
+* They remember the IP of any pod assigned to them  
+* Function as a load balancer  
+
+
+### Service Types:  
+* `ClusterIP` - Service can communicate with internal IP's (pods)  
+  * Default  
+  * Only pod's inside the cluster can talk to the service  
+
+
+* `NodePort` - Service is exposed on a node at a static port  
+  * Automatically allocates a port  
+  * Allows external callers to access the node using a port  
+
+
+* `LoadBalancer` - Service has an external IP and acts as a load balancer  
+  * Exists outside of the nodes  
+  * Splits traffic between `NodePort` services  
+  * Can combine with cloud provider load balancers
+
+
+* `ExternalName` - Maps a service to a DNS  
+  * Allows access to an external service  
+  * Assigns a Name to an external resource  
+
+
+### Kubectl for services:  
+
+* `kubectl port-forward <pod_name> <external>:<internal>`    
+  * Creates a temporary service that allows port access  
+  * Basically creates a NodePort service  
+
+
+### YAML for services:  
+
+```yaml
+apiVersion: apps/v1
+kind: Service
+
+# Describes the service
+metadata:
+  name: my-nginx # This name is used as a DNS for the service <name>:<port>
+  labels:
+    app: my-nginx
+
+spec:
+  # What type? (ClusterIp | NodePort | LoadBalancer | ExternalName)
+  # type: # Type Here
+
+  # externalName: api.something.com # This is used if type is ExternalName
+
+  # What Pod template should it use?
+  selector:
+    app: my-nginx 
+
+  # What is the Container target port and service port?
+  ports: 
+  # ClusterIP setup
+  - name: http
+    port: 80
+    targetPort: 80
+
+  # NodePort setup
+  #- port: 80
+  #  targetPort: 80
+  #  nodePort: 31000 # This is optional
+
+  # LoadBalancer setup
+  #- port: 80 # This is the external port
+  #  targetPort: 80
+
+  # ExternalName setup
+  #- port: 9000
 ```
