@@ -13,7 +13,11 @@
     1. [Service Types](https://github.com/Benoniy/k8_basics#service-types)
     2. [Kubectl for Services](https://github.com/Benoniy/k8_basics#kubectl-for-services)
     3. [YAML for Services](https://github.com/Benoniy/k8_basics#yaml-for-services)
-5. [Volumes](https://github.com/Benoniy/k8_basics#volumes)
+5. [Storage Options](https://github.com/Benoniy/k8_basics#storage-options)
+    1. [Volumes](https://github.com/Benoniy/k8_basics#volumes)
+    2. [YAML for emptyDir](https://github.com/Benoniy/k8_basics#yaml-for-emptydir)
+    3. [YAML for hostPath](https://github.com/Benoniy/k8_basics#yaml-for-hostpath)
+    4. [YAML for Cloud](https://github.com/Benoniy/k8_basics#yaml-for-cloud)
 
 
 ## What is Kubernetes (K8)?
@@ -66,6 +70,9 @@
 
 
 ## YAML for Pods:  
+
+For information on mounting volumes see the YAML in the [volumes](https://github.com/Benoniy/k8_basics#volumes) section.
+
 
 ### Basic pod yaml:  
 ```yaml
@@ -313,11 +320,135 @@ spec:
 ```
 
 
-## Volumes:  
+## Storage Options:  
 * Can be used to store data for access by pods  
 * Avoids data loss as the pod filesystem is ephemeral  
 * One pod can have multiple volumes  
 * Containers user a mountPath to access volumes (Like plugging a USB into a PC)  
-* There are two types  
+* There are four types  
   - Volumes  
   - PersistentVolumes  
+  - PersistentVolumeClaims  
+  - StorageClasses  
+
+
+### Volumes:  
+* There are 7 types of volume:
+  * `emptyDir`
+    * Exists inside a pod's file system
+    * Only exists as long as the pod is alive  
+    * Is useful for inter-container file sharing  
+  * `hostPath`
+    * Exists inside a node's file system
+    * if the node dies so does the volume
+  * `nfs`
+    * Exists as a separate networked volume
+    * Full separation from K8
+    * Could be provided by an external service
+  * `configMap/secret`
+    * Provide a Pod with access to K8 resources
+  * `persistentVolumeClaim`
+    * A persistent storage option
+    * Abstracted from the details of where the volume is  
+  * `Cloud`
+    * A cluster wide storage option  
+* Volumes are defined when you create Pods
+
+
+### YAML for emptyDir: 
+```yaml
+apiVersion: v1
+kind: Pod
+spec:
+  # Here is where we define volumes
+  volumes:
+    - name: html
+      emptyDir: {}
+
+  # Define our containers normally
+  containers:
+  - name: my-nginx
+    image: nginx:alpine
+
+    # Here is where we mount volumes to containers
+    volumeMounts:
+      - name: html # Name of the volume we want to mount
+        mountPath: /usr/share/nginx/html # Internal location that we want to mount the volume to
+        readOnly: true
+
+  - name: html-updater
+    image: alpine
+    command: ["/bin/sh", "-c"]
+    args:
+      - while true: do date >> /html/index.html;
+          sleep 10; done
+
+    # Multiple containers can mount the same volume
+    volumeMounts:
+      - name: html # Name of the volume we want to mount
+        mountPath: /html # Internal location that we want to mount the volume to
+```
+
+
+### YAML for hostPath: 
+```yaml
+apiVersion: v1
+kind: Pod
+spec:
+  # Here is where we define volumes
+  volumes:
+    - name: docker-socket
+      hostPath:
+        path: /var/run/docker.sock
+        type: Socket
+
+  # Define our containers normally
+  containers:
+  - name: docker
+    image: docker
+    command: ["sleep"]
+    args : ["1000"]
+
+    # Here is where we mount volumes to containers
+    volumeMounts:
+      - name: docker-socket # Name of the volume we want to mount
+        mountPath: /var/run/docker.sock # Internal location that we want to mount the volume to
+```
+
+
+### YAML for Cloud:
+```yaml
+apiVersion: v1
+kind: Pod
+spec:
+  # Here is where we define volumes
+  volumes:
+    - name: cloud-volume
+
+      # AWS
+      awsElasticBlockStore:
+        volumeID: <volumeID>
+        fsType: ext4
+
+      # # Azure
+      # azureFile:
+      #   secretName: <secret>
+      #   shareName: <shareName>
+      #   readOnly: false
+
+      # # Google Cloud Platform
+      # gcePersistentDisk:
+      #   pdName: <pdName>
+      #   fsType: ext4
+
+
+
+  # Define our containers normally
+  containers:
+  - name: cloud-app
+    image: image
+    # Here is where we mount volumes to containers
+    volumeMounts:
+      - name: cloud-volume # Name of the volume we want to mount
+        mountPath: /data/storage # Internal location that we want to mount the volume to
+```
