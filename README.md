@@ -15,10 +15,10 @@
     3. [YAML for Services](https://github.com/Benoniy/k8_basics#yaml-for-services)
 5. [Storage Options](https://github.com/Benoniy/k8_basics#storage-options)
     1. [Volumes](https://github.com/Benoniy/k8_basics#volumes)
-    2. [YAML for emptyDir](https://github.com/Benoniy/k8_basics#yaml-for-emptydir)
-    3. [YAML for hostPath](https://github.com/Benoniy/k8_basics#yaml-for-hostpath)
-    4. [YAML for Cloud](https://github.com/Benoniy/k8_basics#yaml-for-cloud)
-
+        1. [YAML for emptyDir](https://github.com/Benoniy/k8_basics#yaml-for-emptydir)
+        2. [YAML for hostPath](https://github.com/Benoniy/k8_basics#yaml-for-hostpath)
+        3. [YAML for Cloud](https://github.com/Benoniy/k8_basics#yaml-for-cloud)
+    2. [Persistent Volumes (PV) and Persistent volume claim's (PVC)](https://github.com/Benoniy/k8_basics#persistent-volumes-pv-and-persistent-volume-claims-pvc)
 
 ## What is Kubernetes (K8)?
 * Orchestration of containers  
@@ -452,7 +452,7 @@ spec:
 ```
 
 
-### Persistent Volumes and PVC's:
+### Persistent Volumes (PV) and Persistent volume claim's (PVC):
 * A cluster wide storage unit  
 * Relies on NAS (network attached storage)
 * Provisioned by an administrator  
@@ -462,3 +462,6 @@ spec:
     2. A Persistent volume claim (PVC)
       * Setup within a Deployment or Pod
       * Requests access to a Persistent volume
+
+
+#### YAML for PV and PVC
