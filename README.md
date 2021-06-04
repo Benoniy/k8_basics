@@ -29,7 +29,9 @@
     2. [Persistent Volumes (PV) and Persistent volume claim's (PVC)](https://github.com/Benoniy/k8_basics#persistent-volumes-pv-and-persistent-volume-claims-pvc)
         1. [YAML for PV's](https://github.com/Benoniy/k8_basics#yaml-for-pvs)
         2. [YAML for PVC's](https://github.com/Benoniy/k8_basics#yaml-for-pvcs)
-
+    3. [Storage Classes (SC)](https://github.com/Benoniy/k8_basics#storage-classes-sc)
+        1. [How do SC's work?](https://github.com/Benoniy/k8_basics#how-do-scs-work)
+        2. [YAML for storage classes](https://github.com/Benoniy/k8_basics#yaml-for-storage-classes)
 
 ## What is Kubernetes (K8)?
 * Orchestration of containers  
@@ -504,7 +506,8 @@ spec:
   # Even if the claim is deleted don't delete the volume from the cloud
   persistentVolumeReclaimPolicy: retain
 
-  # Define your cloud service provider
+  # Define your cloud service provider or local.
+
   # AWS
   awsElasticBlockStore:
     volumeID: <volumeID>
@@ -574,3 +577,38 @@ spec:
           claimName: pp-dd-account-hdd-5g
 
     ```
+
+
+### Storage classes (SC):
+* Storage template
+* Used to dynamically provision storage
+* A layer of separation between PVC and PV
+* Allows quick configuration of needed PV's
+* A single point of contact to edit
+
+
+#### How do SC's work?
+1. Create a storage class
+2. Create a PVC that references your storage class
+3. The SC creates a PV and the claim is bound to it
+
+
+#### YAML for storage classes:
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+
+metadata:
+  name: local-storage
+
+# Don't kill the storage after the PVC is released
+reclaimPolicy: retain
+
+# How do we create the persistent volume?
+# This field must be changed based on your scenario
+# It supports all clouds, local and more
+provisioner: kubernetes.io/no-provisioner
+
+# Don't create the PV immediately, wait until it's needed
+volumeBindingMode: WaitForFirstConsumer
+```
