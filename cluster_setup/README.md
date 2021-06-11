@@ -33,8 +33,6 @@ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documen
 
 sudo usermod -a -G docker ubuntu
 
-/etc/resolv.conf
-
 sudo nano /etc/netplan/99-custom-dns.yaml
 ```
 network:
@@ -52,9 +50,14 @@ network:
 
 sudo apt-get update -y
 
-sudo apt-get install -y docker.io
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+sudo apt-get update -y
 
 sudo apt-get install -y apt-transport-https ca-certificates curl
+
+sudo apt-get install -y docker-ce
 
 sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
 
