@@ -23,4 +23,16 @@ sudo usermod -a -G docker ubuntu
 
 /etc/resolv.conf
 
+sudo nano /etc/netplan/99-custom-dns.yaml
+```
+network:
+    version: 2
+    ethernets:
+        eth0:         
+            nameservers:
+                    addresses: [1.1.1.1, 1.0.0.1]
+            dhcp4-overrides:
+                    use-dns: false
+```
+
 sudo kubeadm join 69.69.69.194:6443 --token 26t0sl.taobbhyry60ulthi --discovery-token-ca-cert-hash sha256:1ed312efc9f6b62c9c94c56d086a259f989bddd54f337937cfd60f5a8850e35a
