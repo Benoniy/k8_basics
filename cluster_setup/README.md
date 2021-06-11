@@ -21,4 +21,6 @@ sudo sysctl -p
 
 sudo usermod -a -G docker ubuntu
 
+/etc/resolv.conf
+
 sudo kubeadm join 69.69.69.194:6443 --token 26t0sl.taobbhyry60ulthi --discovery-token-ca-cert-hash sha256:1ed312efc9f6b62c9c94c56d086a259f989bddd54f337937cfd60f5a8850e35a
